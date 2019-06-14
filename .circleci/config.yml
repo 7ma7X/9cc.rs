@@ -8,6 +8,6 @@ jobs:
     steps:
       - checkout
       - run:
-        name: "Compiler Unit Test"
+        name: Compiler Unit Test
         command: bash test.sh
   
