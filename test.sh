@@ -20,6 +20,7 @@ cargo build --release
 
 try 0 0
 try 42 42
+try 21 '5+20-4'
 
 echo OK
 rm tmp.s tmp
