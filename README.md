@@ -9,5 +9,5 @@ cf. https://www.sigbus.info/compilerbook
 docker build . -t rust-9cc
 docker run -it --name rust-9cc -v $PWD:/9cc rust-9cc "/bin/bash"
 cd 9cc
-cargo run [...args]
+cargo run --release -- [...args]
 ```

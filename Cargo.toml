@@ -1,7 +1,11 @@
 [package]
-name = "tiny_cc"
+name = "rust-9cc"
 version = "0.1.0"
 authors = ["7ma7X <7X.rusk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+
+[[bin]]
+name = "9cc"
+path = "src/9cc.rs"
