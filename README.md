@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/7ma7X/9cc.rs.svg?style=svg&circle-token=c0c8c4a5b71f9e0a44872393939759895bd98310)](https://circleci.com/gh/7ma7X/9cc.rs)
+
 # 9cc.rs
 
 C Compiler.  
