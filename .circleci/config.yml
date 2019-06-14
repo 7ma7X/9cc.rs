@@ -7,8 +7,8 @@ jobs:
     working_directory: /9cc
     steps:
       - checkout
-      
       - run:
         name: Compiler Unit Test
-        command: bash test.sh
+        command: |
+          bash test.sh
   
