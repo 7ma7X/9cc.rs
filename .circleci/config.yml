@@ -1,0 +1,10 @@
+version: 2
+
+jobs:
+  docker:
+    - image: rust
+  steps:
+    - run:
+      name: Compiler Unit Test
+      command: bash test.sh
+  
