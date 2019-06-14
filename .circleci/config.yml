@@ -4,8 +4,8 @@ jobs:
   build:
     docker:
       - image: rust
-  steps:
-    - run:
-      name: Compiler Unit Test
-      command: bash test.sh
+    steps:
+      - run:
+        name: "Compiler Unit Test"
+        command: bash test.sh
   
