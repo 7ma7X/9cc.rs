@@ -1,8 +1,9 @@
 version: 2
 
 jobs:
-  docker:
-    - image: rust
+  build:
+    docker:
+      - image: rust
   steps:
     - run:
       name: Compiler Unit Test
