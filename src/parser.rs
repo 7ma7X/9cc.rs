@@ -53,13 +53,13 @@ impl Node {
         node = Node::new_node(
           Tk::Multi, 
           Some(Box::new(node)), 
-          Some(Box::new(Node::mul(tokens, pos, original)))
+          Some(Box::new(Node::unary(tokens, pos, original)))
         )
       } else if consume(Tk::Div, tokens, pos) {
         node = Node::new_node(
           Tk::Div, 
           Some(Box::new(node)), 
-          Some(Box::new(Node::mul(tokens, pos, original)))
+          Some(Box::new(Node::unary(tokens, pos, original)))
         ) 
       } else {
         return node;
