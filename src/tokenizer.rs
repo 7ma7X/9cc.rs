@@ -8,7 +8,7 @@ pub enum Tk {
   Multi, // '*'
   Div, // '/'
   LParen, // '('
-  RParen, // '('
+  RParen, // ')'
   Num(i32), // 数値
   EOF
 }
