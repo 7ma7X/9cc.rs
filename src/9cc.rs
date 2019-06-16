@@ -1,10 +1,12 @@
 mod util;
 mod tokenizer;
+mod parser;
 
 use std::env;
 use std::process;
 
 use tokenizer::*;
+use parser::*;
 
 fn main() {
   let argv: Vec<String> = env::args().collect();
@@ -20,46 +22,20 @@ fn main() {
   let mut tokens = vec![Token::init(); 100];
   tokenize(&mut user_input, &original, &mut tokens);
 
+  let mut pos: usize = 0;
+  let node: Node = Node::expr(&tokens, &mut pos, &original);
+
   // println!("{:?}", tokens); // デバッグ用
 
   println!(".intel_syntax noprefix");
   println!(".global main");
   println!("main:");
-
-  // 式の最初は数でなければならないので、それをチェックして
-  // 最初のmov命令を出力
-  if tokens[0].ty != Tk::Num {
-    util::error_at(&tokens[0].input, &original, "数ではありません".to_string());
-  }
-  println!("    mov rax, {}", tokens[0].val);
   
-  // `+ <数>`あるいは`- <数>`というトークンの並びを消費しつつ
-  // アセンブリを出力
-  let mut i = 1;
+  // 抽象構文木を下りながらコード生成
+  node.gen();
 
-  while tokens[i].ty != Tk::EOF {
-    if tokens[i].ty == Tk::Plus {
-      i += 1;
-      if tokens[i].ty != Tk::Num {
-        util::error_at(&tokens[i].input, &original, "数ではありません".to_string());
-      }
-      println!("    add rax, {}", tokens[i].val);
-      i += 1;
-      continue;
-    } 
-
-    if tokens[i].ty == Tk::Minus {
-      i += 1;
-      if tokens[i].ty != Tk::Num {
-        util::error_at(&tokens[i].input, &original, "数ではありません".to_string());
-      }
-      println!("    sub rax, {}", tokens[i].val);
-      i += 1;
-      continue;
-    } 
-
-    util::error_at(&tokens[i].input, &original, "予期しないトークンです".to_string());
-  }
-
+  // スタックトップに式全体の値が残っているはずなので
+  // それをRAXにロードして関数からの返り値とする
+  println!("    pop rax");
   println!("    ret");
 }

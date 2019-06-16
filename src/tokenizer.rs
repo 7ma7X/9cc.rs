@@ -5,20 +5,23 @@ use crate::util::*;
 pub enum Tk {
   Plus, // '+'
   Minus, // '-'
-  Num, //数値
+  Multi, // '*'
+  Div, // '/'
+  LParen, // '('
+  RParen, // '('
+  Num(i32), // 数値
   EOF
 }
 
 #[derive(Clone, Debug)]
 pub struct Token {
   pub ty: Tk,
-  pub val: i32,
   pub input: String,
 }
 
 impl Token {
   pub fn init() -> Token {
-    Token { ty: Tk::EOF, val: 0, input: "".to_string() }
+    Token { ty: Tk::EOF, input: "".to_string() }
   }
 }
 
@@ -32,32 +35,39 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
   while !(p.is_empty()) {
     let top_char = &(p.as_str())[..1];
 
-    if top_char == " " {
-      removes(p);
-      continue;
-    }
-
-    if top_char == "+" || top_char == "-" {
-      if top_char == "+" {
-        tokens[i].ty = Tk::Plus;
-      } else {
-        tokens[i].ty = Tk::Minus;
+    match top_char {
+      " " => {
+        removes(p);
       }
-      tokens[i].input = p.to_string();
-      i += 1;
-      removes(p);
-      continue;
+      op @ "+" | op @ "-" | op @ "*" | op @ "/" | op @ "(" | op @ ")" => {
+        if op == "+" {
+          tokens[i].ty = Tk::Plus;
+        } else if op == "-" {
+          tokens[i].ty = Tk::Minus;
+        } else if op == "*" {
+          tokens[i].ty = Tk::Multi;
+        } else if op == "/" {
+          tokens[i].ty = Tk::Div;
+        } else if op == "(" {
+          tokens[i].ty = Tk::LParen;
+        } else {
+          tokens[i].ty = Tk::RParen;
+        }
+        tokens[i].input = p.to_string();
+        i += 1;
+        removes(p);
+      }
+      _ => {
+        if p.chars().next().unwrap().is_digit(10) {
+          tokens[i].input = p.to_string();
+          tokens[i].ty = Tk::Num(strtol(p));
+          i += 1;
+        } else {
+          error_at(p, original, "トークナイズできません".to_string());
+        }
+      }
     }
 
-    if p.chars().next().unwrap().is_digit(10) {
-      tokens[i].ty = Tk::Num;
-      tokens[i].input = p.to_string();
-      tokens[i].val = strtol(p);
-      i += 1;
-      continue;
-    }
-
-    error_at(p, original, "トークナイズできません".to_string());
   }
 
   tokens[i].ty = Tk::EOF;
