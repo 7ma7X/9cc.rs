@@ -12,6 +12,7 @@ try() {
     echo "$input => $actual"
   else
     echo "$expected expected, but got $actual"
+    rm tmp.s tmp
     exit 1
   fi
 }
