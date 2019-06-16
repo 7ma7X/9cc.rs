@@ -43,10 +43,10 @@ impl Node {
   }
 
   /**
-   * mul  = term ("*" term | "/" term)*
+   * mul = unary ("*" unary | "/" unary)*
    */
   fn mul(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
-    let mut node: Node = Node::term(tokens, pos, original).unwrap();
+    let mut node: Node = Node::unary(tokens, pos, original);
 
     loop {
       if consume(Tk::Multi, tokens, pos) {
@@ -67,6 +67,22 @@ impl Node {
     }
   }
 
+  /**
+   * unary = ("+" | "-")? term
+   */
+  fn unary(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+    if consume(Tk::Plus, tokens, pos) {
+      return Node::term(tokens, pos, original).unwrap();
+    }
+    if consume(Tk::Minus, tokens, pos) {
+      return Node::new_node(Tk::Minus, 
+        Some(Box::new(Node::new_node_num(0))), 
+        Some(Box::new(Node::term(tokens, pos, original).unwrap()))
+      );
+    }
+    
+    Node::term(tokens, pos, original).unwrap()
+  }
 
   /**
    * term = "(" expr ")" | num
