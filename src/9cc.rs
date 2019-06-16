@@ -22,10 +22,12 @@ fn main() {
   let mut tokens = vec![Token::init(); 100];
   tokenize(&mut user_input, &original, &mut tokens);
 
+  // println!("{:?}", tokens); // デバッグ用
+
   let mut pos: usize = 0;
   let node: Node = Node::expr(&tokens, &mut pos, &original);
 
-  // println!("{:?}", tokens); // デバッグ用
+  // println!("{:?}", node); // デバッグ用
 
   println!(".intel_syntax noprefix");
   println!(".global main");
