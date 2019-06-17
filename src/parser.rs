@@ -97,16 +97,13 @@ impl Node {
       return Ok(node);
     }
 
-    match tokens[*pos].ty {
-      Tk::Num(n) => {
-        *pos += 1;
-        return Ok(Node::new_node_num(n));
-      }
-      _ => {
-        error_at(&tokens[*pos].input, original,
-          "数値でも開きカッコでもないトークンです".to_string());
-        Err(())
-      }
+    if let Tk::Num(n) = tokens[*pos].ty {
+      *pos += 1;
+      return Ok(Node::new_node_num(n));
+    } else {
+      error_at(&tokens[*pos].input, original,
+        "数値でも開きカッコでもないトークンです".to_string());
+      Err(())
     }
   }
 
@@ -114,43 +111,38 @@ impl Node {
    * 抽象構文木からアセンブリを生成
    */
   pub fn gen(&self) {
-    match &self.ty {
-      Tk::Num(n) => {
-        println!("    push {}", n);
-        return;
+    if let Tk::Num(n) = &self.ty {
+      println!("    push {}", n);
+      return;    
+    } else {
+      if let Some(ref lnode) = &self.lhs {
+        lnode.gen();
       }
-      _ => {
-        match &self.lhs {
-          Some(ref lnode) => { lnode.gen() }
-          None => {}
-        }
-        match &self.rhs {
-          Some(ref rnode) => { rnode.gen() }
-          None => {}
-        }
-
-        println!("    pop rdi");
-        println!("    pop rax");
-
-        match &self.ty {
-          Tk::Plus => {
-            println!("    add rax, rdi");
-          }
-          Tk::Minus => {
-            println!("    sub rax, rdi");
-          }
-          Tk::Multi => {
-            println!("    imul rdi");
-          }
-          Tk::Div => {
-            println!("    cqo");
-            println!("    idiv rdi");
-          }
-          _ => {}
-        }
-
-        println!("    push rax");
+      if let Some(ref rnode) = &self.rhs {
+        rnode.gen();
       }
+
+      println!("    pop rdi");
+      println!("    pop rax");
+
+      match &self.ty {
+        Tk::Plus => {
+          println!("    add rax, rdi");
+        }
+        Tk::Minus => {
+          println!("    sub rax, rdi");
+        }
+        Tk::Multi => {
+          println!("    imul rdi");
+        }
+        Tk::Div => {
+          println!("    cqo");
+          println!("    idiv rdi");
+        }
+        _ => {}
+      }
+
+      println!("    push rax");
     }
   }
 }
