@@ -18,9 +18,34 @@ impl Node {
   }
 
   /**
-   * expr = mul ("+" mul | "-" mul)*
+   * expr = add ("==" add | "!=" add)*
    */
   pub fn expr(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+    let mut node: Node = Node::add(tokens, pos, original);
+
+    loop {
+      if consume(Tk::Equ, tokens, pos) {
+        node = Node::new_node(
+          Tk::Equ, 
+          Some(Box::new(node)), 
+          Some(Box::new(Node::add(tokens, pos, original)))
+        )
+      } else if consume(Tk::Ne, tokens, pos) {
+        node = Node::new_node(
+          Tk::Ne, 
+          Some(Box::new(node)), 
+          Some(Box::new(Node::add(tokens, pos, original)))
+        )
+      } else {
+        return node;
+      }
+    }
+  }
+
+  /**
+   * add = mul ("+" mul | "-" mul)*
+   */
+  fn add(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
     let mut node: Node = Node::mul(tokens, pos, original);
 
     loop {
@@ -136,6 +161,16 @@ impl Node {
         Tk::Div => {
           println!("    cqo");
           println!("    idiv rdi");
+        }
+        Tk::Equ => {
+          println!("    cmp rax, rdi");
+          println!("    sete al");
+          println!("    movzb rax, al");
+        }
+        Tk::Ne => {
+          println!("    cmp rax, rdi");
+          println!("    setne al");
+          println!("    movzb rax, al");          
         }
         _ => {}
       }

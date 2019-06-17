@@ -9,6 +9,8 @@ pub enum Tk {
   Div, // '/'
   LParen, // '('
   RParen, // ')'
+  Equ, // '=='
+  Ne, // '!='
   Num(i32), // 数値
   EOF
 }
@@ -37,7 +39,7 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
 
     match top_char {
       " " => {
-        removes(p);
+        remove_times(p, 1);
       }
       op @ "+" | op @ "-" | op @ "*" | op @ "/" | op @ "(" | op @ ")" => {
         if op == "+" {
@@ -55,7 +57,26 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
         }
         tokens[i].input = p.to_string();
         i += 1;
-        removes(p);
+        remove_times(p, 1);
+      }
+      op @ "=" | op @ "!" => {
+        if op == "=" {
+          if p.starts_with("==") {
+            tokens[i].ty = Tk::Equ;
+            i += 1;
+            remove_times(p, 2);
+          } else {
+            error_at(p, original, "トークナイズできません");
+          }
+        } else {
+          if p.starts_with("!=") {
+            tokens[i].ty = Tk::Ne;
+            i += 1;
+            remove_times(p, 2);
+          } else {
+            error_at(p, original, "トークナイズできません");
+          }
+        }
       }
       _ => {
         if p.chars().next().unwrap().is_digit(10) {

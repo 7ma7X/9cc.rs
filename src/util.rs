@@ -8,7 +8,7 @@ pub fn strtol(s: &mut String) -> i32 {
 
   if &(s.as_str())[..1] == "-" {
     is_negative = true;
-    removes(s);
+    remove_times(s, 1);
   }
 
   for c in s.chars() {
@@ -21,7 +21,7 @@ pub fn strtol(s: &mut String) -> i32 {
   }
 
   for _ in 0..index {
-    removes(s);
+    remove_times(s, 1);
   }
   
   if is_negative {
@@ -50,14 +50,16 @@ pub fn error_at(loc: &String, user_input: &String, msg: &str) {
 }
 
 /**
- * 空文字の先頭文字を削除する際にエラーを出す
+ * 指定された回数だけ先頭文字を削除する
  */
-pub fn removes(s: &mut String) {
-  if s.is_empty() {
-    eprintln!("空文字を削除しようとしています");
-    process::exit(1);
-  } else {
-    s.remove(0);
+pub fn remove_times(s: &mut String, n: usize) {
+  for _ in 0..n {
+    if s.is_empty() {
+      eprintln!("空文字を削除しようとしています");
+      process::exit(1);
+    } else {
+      s.remove(0);
+    }
   }
 }
 
@@ -79,10 +81,10 @@ fn check_error_at() {
 }
 
 #[test]
-fn check_removes() {
-  let mut test: String = "ue".to_string();
-  removes(&mut test);
-  assert_eq!("e".to_string(), test);
-  removes(&mut test);
+fn check_remove_times() {
+  let mut test: String = "ueueo".to_string();
+  remove_times(&mut test, 2);
+  assert_eq!("ueo".to_string(), test);
+  remove_times(&mut test, 3);
   assert_eq!("".to_string(), test);
 }
