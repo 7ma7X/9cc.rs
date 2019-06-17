@@ -63,7 +63,7 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
           tokens[i].ty = Tk::Num(strtol(p));
           i += 1;
         } else {
-          error_at(p, original, "トークナイズできません".to_string());
+          error_at(p, original, "トークナイズできません");
         }
       }
     }
