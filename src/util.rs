@@ -12,13 +12,10 @@ pub fn strtol(s: &mut String) -> i32 {
   }
 
   for c in s.chars() {
-    match c.to_digit(10) {
-      Some(n) => {
-        ans = ans * 10 + (n as i32);
-      }
-      None => {
-        break;
-      }
+    if let Some(n) = c.to_digit(10) {
+      ans = ans * 10 + (n as i32);
+    } else {
+      break;
     }
     index += 1;
   }
