@@ -18,21 +18,46 @@ impl Node {
   }
 
   /**
-   * expr = add ("==" add | "!=" add)*
+   * expr = rel ("==" rel | "!=" rel)*
    */
   pub fn expr(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
-    let mut node: Node = Node::add(tokens, pos, original);
+    let mut node: Node = Node::rel(tokens, pos, original);
 
     loop {
       if consume(Tk::Equ, tokens, pos) {
         node = Node::new_node(
           Tk::Equ, 
           Some(Box::new(node)), 
-          Some(Box::new(Node::add(tokens, pos, original)))
+          Some(Box::new(Node::rel(tokens, pos, original)))
         )
       } else if consume(Tk::Ne, tokens, pos) {
         node = Node::new_node(
           Tk::Ne, 
+          Some(Box::new(node)), 
+          Some(Box::new(Node::rel(tokens, pos, original)))
+        )
+      } else {
+        return node;
+      }
+    }
+  }
+
+  /**
+   * rel = add ("<" add | "<=" add)*
+   */
+  fn rel(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+    let mut node: Node = Node::add(tokens, pos, original);
+
+    loop {
+      if consume(Tk::Lt, tokens, pos) {
+        node = Node::new_node(
+          Tk::Lt, 
+          Some(Box::new(node)), 
+          Some(Box::new(Node::add(tokens, pos, original)))
+        )
+      } else if consume(Tk::Le, tokens, pos) {
+        node = Node::new_node(
+          Tk::Le, 
           Some(Box::new(node)), 
           Some(Box::new(Node::add(tokens, pos, original)))
         )
@@ -162,14 +187,15 @@ impl Node {
           println!("    cqo");
           println!("    idiv rdi");
         }
-        Tk::Equ => {
+        rl @ Tk::Equ | rl @ Tk::Ne | rl @ Tk::Lt | rl @ Tk::Le => {
           println!("    cmp rax, rdi");
-          println!("    sete al");
-          println!("    movzb rax, al");
-        }
-        Tk::Ne => {
-          println!("    cmp rax, rdi");
-          println!("    setne al");
+          match rl {
+            Tk::Equ => println!("    sete al"),
+            Tk::Ne  => println!("    setne al"),
+            Tk::Lt  => println!("    setl al"),
+            Tk::Le  => println!("    setle al"),
+            _ => {}
+          }
           println!("    movzb rax, al");          
         }
         _ => {}

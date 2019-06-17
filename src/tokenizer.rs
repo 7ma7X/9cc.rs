@@ -11,6 +11,8 @@ pub enum Tk {
   RParen, // ')'
   Equ, // '=='
   Ne, // '!='
+  Lt, // '<'
+  Le, // '<='
   Num(i32), // 数値
   EOF
 }
@@ -75,6 +77,19 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
             remove_times(p, 2);
           } else {
             error_at(p, original, "トークナイズできません");
+          }
+        }
+      }
+      op @ "<" | op @ ">" => {
+        if op == "<" {
+          if p.starts_with("<=") {
+            tokens[i].ty = Tk::Le;
+            i += 1;
+            remove_times(p, 2);
+          } else {
+            tokens[i].ty = Tk::Lt;
+            i += 1;
+            remove_times(p, 1);
           }
         }
       }
