@@ -43,7 +43,7 @@ impl Node {
   }
 
   /**
-   * rel = add ("<" add | "<=" add)*
+   * rel = add ("<" add | "<=" add | ">" add | ">=" add)*
    */
   fn rel(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
     let mut node: Node = Node::add(tokens, pos, original);
@@ -61,6 +61,18 @@ impl Node {
           Some(Box::new(node)), 
           Some(Box::new(Node::add(tokens, pos, original)))
         )
+      } else if consume(Tk::Gt, tokens, pos) {
+        node = Node::new_node(
+          Tk::Lt, 
+          Some(Box::new(Node::add(tokens, pos, original))),
+          Some(Box::new(node))
+        )
+      } else if consume(Tk::Ge, tokens, pos) {
+        node = Node::new_node(
+          Tk::Le, 
+          Some(Box::new(Node::add(tokens, pos, original))),
+          Some(Box::new(node))
+        )        
       } else {
         return node;
       }

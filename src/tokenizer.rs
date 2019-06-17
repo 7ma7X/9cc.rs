@@ -13,6 +13,8 @@ pub enum Tk {
   Ne, // '!='
   Lt, // '<'
   Le, // '<='
+  Gt, // '>'
+  Ge, // '>='
   Num(i32), // 数値
   EOF
 }
@@ -84,14 +86,21 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
         if op == "<" {
           if p.starts_with("<=") {
             tokens[i].ty = Tk::Le;
-            i += 1;
             remove_times(p, 2);
           } else {
             tokens[i].ty = Tk::Lt;
-            i += 1;
             remove_times(p, 1);
           }
+        } else {
+          if p.starts_with(">=") {
+            tokens[i].ty = Tk::Ge;
+            remove_times(p, 2);
+          } else {
+            tokens[i].ty = Tk::Gt;
+            remove_times(p, 1);
+          }   
         }
+        i += 1;
       }
       _ => {
         if p.chars().next().unwrap().is_digit(10) {
