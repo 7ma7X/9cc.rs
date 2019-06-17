@@ -72,38 +72,38 @@ impl Node {
    */
   fn unary(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
     if consume(Tk::Plus, tokens, pos) {
-      return Node::term(tokens, pos, original).unwrap();
+      return Node::term(tokens, pos, original);
     }
     if consume(Tk::Minus, tokens, pos) {
       return Node::new_node(Tk::Minus, 
         Some(Box::new(Node::new_node_num(0))), 
-        Some(Box::new(Node::term(tokens, pos, original).unwrap()))
+        Some(Box::new(Node::term(tokens, pos, original)))
       );
     }
     
-    Node::term(tokens, pos, original).unwrap()
+    Node::term(tokens, pos, original)
   }
 
   /**
    * term = "(" expr ")" | num
    */
-  fn term(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Result<Node, ()> {
+  fn term(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
     if consume(Tk::LParen, tokens, pos) {
       let node = Node::expr(tokens, pos, original);
       if !(consume(Tk::RParen, tokens, pos)) {
         error_at(&tokens[*pos].input, original, 
           "開きカッコに対応する閉じカッコがありません".to_string());
       }
-      return Ok(node);
+      return node;
     }
 
     if let Tk::Num(n) = tokens[*pos].ty {
       *pos += 1;
-      return Ok(Node::new_node_num(n));
+      return Node::new_node_num(n);
     } else {
       error_at(&tokens[*pos].input, original,
         "数値でも開きカッコでもないトークンです".to_string());
-      Err(())
+      panic!("トークンエラー");
     }
   }
 
