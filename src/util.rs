@@ -34,8 +34,8 @@ pub fn strtol(s: &mut String) -> i32 {
 /**
  * エラー箇所を報告するための関数
  */
-pub fn error_at(loc: usize, user_input: &String, msg: &str) {
-  let pos = user_input.len() - loc;
+pub fn error_at(unread_string_length: usize, user_input: &String, msg: &str) {
+  let pos = user_input.len() - unread_string_length;
   let mut return_string = "".to_string();
   return_string += user_input;
   return_string += "\n";
@@ -73,11 +73,11 @@ fn check_strtol() {
 
 #[test]
 fn check_error_at() {
-  let loc = String::from("foo + 5").len();
+  let unread_string_length = String::from("foo + 5").len();
   let user_input = String::from("1 + foo + 5");
   let msg = "トークナイズできません";
 
-  error_at(loc, &user_input, msg);
+  error_at(unread_string_length, &user_input, msg);
 }
 
 #[test]

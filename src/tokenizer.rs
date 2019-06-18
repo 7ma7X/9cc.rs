@@ -26,7 +26,7 @@ impl Default for Tk {
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Token {
   pub ty: Tk,
-  pub loc: usize,
+  pub unread_string_length: usize,
 }
 
 /**
@@ -57,7 +57,7 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
         } else {
           tk.ty = Tk::RParen;
         }
-        tk.loc = p.to_string().len();
+        tk.unread_string_length = p.to_string().len();
         tokens.push(tk);
         remove_times(p, 1);
       }
@@ -105,7 +105,7 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
       _ => {
         if p.chars().next().unwrap().is_digit(10) {
           let mut tk: Token = Default::default();
-          tk.loc = p.to_string().len();
+          tk.unread_string_length = p.to_string().len();
           tk.ty = Tk::Num(strtol(p));
           tokens.push(tk);
         } else {
@@ -116,7 +116,6 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
 
   }
 
-  let mut tk: Token = Default::default();
-  tk.ty = Tk::EOF;
+  let tk: Token = Default::default();
   tokens.push(tk);
 }

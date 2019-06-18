@@ -153,7 +153,7 @@ impl Node {
     if consume(Tk::LParen, tokens, pos) {
       let node = Node::expr(tokens, pos, original);
       if !(consume(Tk::RParen, tokens, pos)) {
-        error_at(tokens[*pos].loc, original, "開きカッコに対応する閉じカッコがありません");
+        error_at(tokens[*pos].unread_string_length, original, "開きカッコに対応する閉じカッコがありません");
       }
       return node;
     }
@@ -162,7 +162,7 @@ impl Node {
       *pos += 1;
       return Node::new_node_num(n);
     } else {
-      error_at(tokens[*pos].loc, original, "数値でも開きカッコでもないトークンです");
+      error_at(tokens[*pos].unread_string_length, original, "数値でも開きカッコでもないトークンです");
       panic!("トークンエラー");
     }
   }
