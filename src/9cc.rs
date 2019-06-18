@@ -27,7 +27,7 @@ fn main() {
   let mut pos: usize = 0;
   let node: Node = Node::expr(&tokens, &mut pos, &original);
 
-  // println!("{:?}", node); // デバッグ用
+  // println!("{:#?}", node); // デバッグ用
 
   println!(".intel_syntax noprefix");
   println!(".global main");
