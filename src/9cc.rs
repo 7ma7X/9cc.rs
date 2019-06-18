@@ -1,11 +1,12 @@
 mod util;
-mod tokenizer;
+mod lexer;
 mod parser;
+mod codegen;
 
 use std::env;
 use std::process;
 
-use tokenizer::*;
+use lexer::*;
 use parser::*;
 
 fn main() {
