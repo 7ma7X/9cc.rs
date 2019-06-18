@@ -1,7 +1,7 @@
 use crate::util::*;
 
 // トークンの型を表す
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Tk {
   Plus, // '+'
   Minus, // '-'
@@ -19,16 +19,14 @@ pub enum Tk {
   EOF
 }
 
-#[derive(Clone, Debug)]
-pub struct Token {
-  pub ty: Tk,
-  pub input: String,
+impl Default for Tk {
+  fn default() -> Self { Tk::EOF }
 }
 
-impl Token {
-  pub fn init() -> Token {
-    Token { ty: Tk::EOF, input: "".to_string() }
-  }
+#[derive(Copy, Clone, Default, Debug)]
+pub struct Token {
+  pub ty: Tk,
+  pub loc: usize,
 }
 
 /**
@@ -37,7 +35,6 @@ impl Token {
 pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Token>) {
   let p = user_input;
 
-  let mut i = 0;
   while !(p.is_empty()) {
     let top_char = &(p.as_str())[..1];
 
@@ -46,75 +43,80 @@ pub fn tokenize(user_input: &mut String, original: &String, tokens: &mut Vec<Tok
         remove_times(p, 1);
       }
       op @ "+" | op @ "-" | op @ "*" | op @ "/" | op @ "(" | op @ ")" => {
+        let mut tk: Token = Default::default();
         if op == "+" {
-          tokens[i].ty = Tk::Plus;
+          tk.ty = Tk::Plus;
         } else if op == "-" {
-          tokens[i].ty = Tk::Minus;
+          tk.ty = Tk::Minus;
         } else if op == "*" {
-          tokens[i].ty = Tk::Multi;
+          tk.ty = Tk::Multi;
         } else if op == "/" {
-          tokens[i].ty = Tk::Div;
+          tk.ty = Tk::Div;
         } else if op == "(" {
-          tokens[i].ty = Tk::LParen;
+          tk.ty = Tk::LParen;
         } else {
-          tokens[i].ty = Tk::RParen;
+          tk.ty = Tk::RParen;
         }
-        tokens[i].input = p.to_string();
-        i += 1;
+        tk.loc = p.to_string().len();
+        tokens.push(tk);
         remove_times(p, 1);
       }
       op @ "=" | op @ "!" => {
+        let mut tk: Token = Default::default();
         if op == "=" {
           if p.starts_with("==") {
-            tokens[i].ty = Tk::Equ;
-            i += 1;
+            tk.ty = Tk::Equ;
+            tokens.push(tk);
             remove_times(p, 2);
           } else {
-            error_at(p, original, "トークナイズできません");
+            error_at(p.len(), original, "トークナイズできません");
           }
         } else {
           if p.starts_with("!=") {
-            tokens[i].ty = Tk::Ne;
-            i += 1;
+            tk.ty = Tk::Ne;
+            tokens.push(tk);
             remove_times(p, 2);
           } else {
-            error_at(p, original, "トークナイズできません");
+            error_at(p.len(), original, "トークナイズできません");
           }
         }
       }
       op @ "<" | op @ ">" => {
+        let mut tk: Token = Default::default();
         if op == "<" {
           if p.starts_with("<=") {
-            tokens[i].ty = Tk::Le;
+            tk.ty = Tk::Le;
             remove_times(p, 2);
           } else {
-            tokens[i].ty = Tk::Lt;
+            tk.ty = Tk::Lt;
             remove_times(p, 1);
           }
         } else {
           if p.starts_with(">=") {
-            tokens[i].ty = Tk::Ge;
+            tk.ty = Tk::Ge;
             remove_times(p, 2);
           } else {
-            tokens[i].ty = Tk::Gt;
+            tk.ty = Tk::Gt;
             remove_times(p, 1);
           }   
         }
-        i += 1;
+        tokens.push(tk);
       }
       _ => {
         if p.chars().next().unwrap().is_digit(10) {
-          tokens[i].input = p.to_string();
-          tokens[i].ty = Tk::Num(strtol(p));
-          i += 1;
+          let mut tk: Token = Default::default();
+          tk.loc = p.to_string().len();
+          tk.ty = Tk::Num(strtol(p));
+          tokens.push(tk);
         } else {
-          error_at(p, original, "トークナイズできません");
+          error_at(p.len(), original, "トークナイズできません");
         }
       }
     }
 
   }
 
-  tokens[i].ty = Tk::EOF;
-  tokens[i].input = p.to_string();
+  let mut tk: Token = Default::default();
+  tk.ty = Tk::EOF;
+  tokens.push(tk);
 }

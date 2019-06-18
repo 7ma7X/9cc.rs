@@ -19,7 +19,7 @@ fn main() {
 
   let mut user_input = argv[1].to_string();
   let original = user_input.clone();
-  let mut tokens = vec![Token::init(); 100];
+  let mut tokens: Vec<Token> = Vec::new();
   tokenize(&mut user_input, &original, &mut tokens);
 
   // println!("{:?}", tokens); // デバッグ用

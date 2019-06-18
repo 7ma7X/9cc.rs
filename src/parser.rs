@@ -9,18 +9,18 @@ pub struct Node {
 }
 
 impl Node {
-  fn new_node(ty: Tk, lhs: Option<Box<Node>>, rhs: Option<Box<Node>>) -> Node {
+  fn new_node(ty: Tk, lhs: Option<Box<Node>>, rhs: Option<Box<Node>>) -> Self {
     Node { ty: ty, lhs: lhs, rhs: rhs }
   }
 
-  fn new_node_num(val: i32) -> Node {
+  fn new_node_num(val: i32) -> Self {
     Node { ty: Tk::Num(val), lhs: None, rhs: None }
   }
 
   /**
    * expr = rel ("==" rel | "!=" rel)*
    */
-  pub fn expr(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+  pub fn expr(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Self {
     let mut node: Node = Node::rel(tokens, pos, original);
 
     loop {
@@ -45,7 +45,7 @@ impl Node {
   /**
    * rel = add ("<" add | "<=" add | ">" add | ">=" add)*
    */
-  fn rel(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+  fn rel(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Self {
     let mut node: Node = Node::add(tokens, pos, original);
 
     loop {
@@ -82,7 +82,7 @@ impl Node {
   /**
    * add = mul ("+" mul | "-" mul)*
    */
-  fn add(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+  fn add(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Self {
     let mut node: Node = Node::mul(tokens, pos, original);
 
     loop {
@@ -107,7 +107,7 @@ impl Node {
   /**
    * mul = unary ("*" unary | "/" unary)*
    */
-  fn mul(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+  fn mul(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Self {
     let mut node: Node = Node::unary(tokens, pos, original);
 
     loop {
@@ -132,7 +132,7 @@ impl Node {
   /**
    * unary = ("+" | "-")? term
    */
-  fn unary(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+  fn unary(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Self {
     if consume(Tk::Plus, tokens, pos) {
       return Node::term(tokens, pos, original);
     }
@@ -149,11 +149,11 @@ impl Node {
   /**
    * term = "(" expr ")" | num
    */
-  fn term(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Node {
+  fn term(tokens: &Vec<Token>, pos: &mut usize, original: &String) -> Self {
     if consume(Tk::LParen, tokens, pos) {
       let node = Node::expr(tokens, pos, original);
       if !(consume(Tk::RParen, tokens, pos)) {
-        error_at(&tokens[*pos].input, original, "開きカッコに対応する閉じカッコがありません");
+        error_at(tokens[*pos].loc, original, "開きカッコに対応する閉じカッコがありません");
       }
       return node;
     }
@@ -162,7 +162,7 @@ impl Node {
       *pos += 1;
       return Node::new_node_num(n);
     } else {
-      error_at(&tokens[*pos].input, original, "数値でも開きカッコでもないトークンです");
+      error_at(tokens[*pos].loc, original, "数値でも開きカッコでもないトークンです");
       panic!("トークンエラー");
     }
   }
