@@ -9,3 +9,8 @@ edition = "2018"
 [[bin]]
 name = "9cc"
 path = "src/9cc.rs"
+
+[dev-dependencies.cargo-husky]
+version = "1"
+default-features = false 
+features = ["precommit-hook", "run-cargo-fmt"]
